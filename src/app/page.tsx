@@ -3,16 +3,14 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  CloudSun,
-  Search,
   Sparkles,
   ArrowRight,
   ShieldCheck,
   Zap,
-  Gauge,
   Compass,
   TrendingUp,
 } from "lucide-react";
+
 import WeatherSearch from "@/components/WeatherSearch";
 import CurrentWeatherCard from "@/components/CurrentWeatherCard";
 import HourlyForecast from "@/components/HourlyForecast";
@@ -26,21 +24,26 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load default initial weather (e.g. New York or user's detected location)
   useEffect(() => {
     let isMounted = true;
 
     async function loadInitialWeather() {
       try {
         const res = await fetch("/api/weather/forecast?city=New York");
-        if (!res.ok) throw new Error("Could not load initial live weather");
+
+        if (!res.ok) {
+          throw new Error("Could not load initial live weather");
+        }
+
         const data: WeatherData = await res.json();
+
         if (isMounted) {
           setWeatherData(data);
           setLoading(false);
         }
       } catch (err: any) {
         console.error("Initial weather fetch error:", err);
+
         if (isMounted) {
           setError(err.message || "Failed to load live weather.");
           setLoading(false);
@@ -56,133 +59,252 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="relative min-h-screen">
-      {/* Dynamic atmospheric background */}
+    <main className="relative min-h-screen overflow-hidden">
+
       <DynamicWeatherBackground
         condition={weatherData?.current.condition.main || "Clear"}
         isDay={true}
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16 space-y-12">
-        {/* Hero Section */}
-        <div className="text-center max-w-3xl mx-auto space-y-5 pt-4">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-semibold backdrop-blur-md animate-in fade-in">
-            <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-            <span>Next-Generation Live Global Weather Intelligence</span>
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-950/30 via-indigo-950/20 to-purple-950/40 pointer-events-none" />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-20 space-y-16">
+
+        {/* HERO SECTION */}
+
+        <section className="text-center max-w-4xl mx-auto space-y-7 pt-8">
+
+          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-400/30 text-blue-200 text-xs sm:text-sm font-bold backdrop-blur-xl shadow-lg shadow-blue-500/10">
+            <Sparkles className="w-4 h-4 text-cyan-300" />
+            Next Generation Live Global Weather
           </div>
 
-          <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-tight">
-            Real-Time Weather.{" "}
-            <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white leading-tight">
+            Real-Time Weather.
+            <span className="block mt-2 bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-400 bg-clip-text text-transparent">
               Hyper-Accurate.
             </span>
           </h1>
 
           <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            Instant global forecasts, minute-by-minute satellite precipitation, Apple Weather-inspired analytical dashboards, and atmospheric indicators.
+            Explore global weather forecasts, live temperature,
+            precipitation updates and beautiful atmospheric
+            weather analytics.
           </p>
 
-          {/* Search Bar in Hero */}
-          <div className="pt-2 max-w-xl mx-auto">
+          {/* SEARCH BAR */}
+
+          <div className="pt-4 max-w-2xl mx-auto p-2 rounded-2xl bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-purple-500/20 border border-white/10 shadow-2xl backdrop-blur-xl">
             <WeatherSearch placeholder="Search any city, capital, or coordinate worldwide..." />
           </div>
 
-          {/* Quick Popular Searches */}
-          <div className="flex flex-wrap items-center justify-center gap-2 pt-1 text-xs text-slate-400">
-            <span className="font-semibold text-slate-500">Trending:</span>
+          {/* TRENDING CITIES */}
+
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-4 text-sm">
+
+            <span className="font-bold text-cyan-300">
+              Trending:
+            </span>
+
             {["Tokyo", "Paris", "London", "San Francisco", "Sydney"].map((city) => (
               <Link
                 key={city}
                 href={`/city/${encodeURIComponent(city)}`}
-                className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/5 transition-colors"
+                className="px-4 py-2 rounded-xl bg-white/5 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 text-slate-200 hover:text-white border border-white/10 hover:border-blue-300/40 transition-all duration-300 hover:-translate-y-1"
               >
                 {city}
               </Link>
             ))}
-          </div>
-        </div>
 
-        {/* Live Weather Spotlight Section */}
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-white flex items-center gap-2">
-              <Zap className="w-5 h-5 text-amber-400" /> Live Spotlight Weather
+          </div>
+        </section>
+
+        {/* LIVE WEATHER SECTION */}
+
+        <section className="space-y-7">
+
+          <div className="flex flex-wrap items-center justify-between gap-4">
+
+            <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-3">
+              <span className="p-2 rounded-xl bg-gradient-to-br from-amber-400/20 to-orange-500/20 border border-amber-400/30">
+                <Zap className="w-6 h-6 text-amber-300" />
+              </span>
+              Live Spotlight Weather
             </h2>
+
             <Link
               href="/dashboard"
-              className="text-xs font-semibold text-blue-400 hover:text-blue-300 flex items-center gap-1 group transition-colors"
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-cyan-500 hover:to-purple-600 text-white text-sm font-bold flex items-center gap-2 shadow-lg shadow-blue-500/20 transition-all duration-300 hover:-translate-y-1"
             >
-              Open Full Dashboard{" "}
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              Open Dashboard
+              <ArrowRight className="w-4 h-4" />
             </Link>
+
           </div>
 
           {loading ? (
-            <WeatherSkeleton />
+            <div className="rounded-3xl border border-blue-400/20 bg-slate-900/60 p-6 backdrop-blur-xl">
+              <WeatherSkeleton />
+            </div>
           ) : error ? (
-            <div className="p-8 rounded-3xl bg-slate-900/60 border border-rose-500/20 text-center space-y-3">
-              <p className="text-rose-400 font-semibold">{error}</p>
+
+            <div className="p-8 rounded-3xl bg-gradient-to-br from-rose-950/70 to-slate-900 border border-rose-400/30 text-center space-y-4">
+
+              <p className="text-rose-300 font-bold">
+                {error}
+              </p>
+
               <button
                 onClick={() => window.location.reload()}
-                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold"
+                className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 text-white font-bold transition-all"
               >
                 Retry
               </button>
+
             </div>
+
           ) : weatherData ? (
-            <div className="space-y-6">
-              <CurrentWeatherCard weather={weatherData.current} />
-              <HourlyForecast hourly={weatherData.hourly} />
+
+            <div className="space-y-7">
+
+              <div className="rounded-3xl border border-cyan-400/20 bg-gradient-to-br from-blue-950/40 to-purple-950/40 p-2 shadow-2xl shadow-blue-950/30 backdrop-blur-xl">
+                <CurrentWeatherCard weather={weatherData.current} />
+              </div>
+
+              <div className="rounded-3xl border border-purple-400/20 bg-gradient-to-br from-indigo-950/40 to-slate-900/60 p-3 shadow-xl backdrop-blur-xl">
+                <HourlyForecast hourly={weatherData.hourly} />
+              </div>
+
             </div>
+
           ) : null}
-        </div>
 
-        {/* Featured Global Cities */}
-        <FeaturedCities />
+        </section>
 
-        {/* Why WeatherNow Highlights */}
-        <div className="rounded-3xl bg-slate-900/60 border border-white/10 p-8 sm:p-10 backdrop-blur-xl">
-          <div className="max-w-2xl mb-8">
-            <h3 className="text-2xl font-black text-white">Why WeatherNow?</h3>
-            <p className="text-sm text-slate-400 mt-1">
-              Engineered with modern full-stack web standards for lightning-fast speeds and reliable meteorological accuracy.
+        {/* FEATURED CITIES */}
+
+        <section className="space-y-6">
+
+          <div className="text-center space-y-3">
+
+            <h2 className="text-3xl font-black text-white">
+              Explore the
+              <span className="bg-gradient-to-r from-cyan-300 to-purple-400 bg-clip-text text-transparent">
+                {" "}World
+              </span>
+            </h2>
+
+            <p className="text-slate-400">
+              Discover weather conditions across popular global cities.
             </p>
+
+          </div>
+
+          <FeaturedCities />
+
+        </section>
+
+        {/* WHY WEATHER NOW */}
+
+        <section className="rounded-3xl bg-gradient-to-br from-blue-950/80 via-indigo-950/70 to-purple-950/80 border border-white/10 p-7 sm:p-10 shadow-2xl backdrop-blur-2xl">
+
+          <div className="max-w-2xl mb-10">
+
+            <div className="inline-flex items-center gap-2 text-cyan-300 text-sm font-bold mb-4">
+              <Sparkles className="w-4 h-4" />
+              POWERFUL FEATURES
+            </div>
+
+            <h3 className="text-3xl sm:text-4xl font-black text-white">
+              Why WeatherNow?
+            </h3>
+
+            <p className="text-sm sm:text-base text-slate-300 mt-3 leading-relaxed">
+              Experience modern weather technology with
+              powerful analytics, reliable forecasts and
+              beautiful interactive dashboards.
+            </p>
+
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-5 rounded-2xl bg-white/5 border border-white/5 space-y-2.5">
-              <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
-                <ShieldCheck className="w-5 h-5" />
+
+            {/* CARD 1 */}
+
+            <div className="group p-6 rounded-2xl bg-gradient-to-br from-blue-500/20 to-cyan-500/10 border border-blue-400/20 hover:border-cyan-300/50 hover:shadow-xl hover:shadow-cyan-500/10 transition-all duration-300 hover:-translate-y-2">
+
+              <div className="w-12 h-12 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                <ShieldCheck className="w-6 h-6 text-cyan-300" />
               </div>
-              <h4 className="font-bold text-white text-base">Dual API Reliability</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Seamless failover between OpenWeatherMap and high-precision Open-Meteo feeds ensures 100% live uptime worldwide.
+
+              <h4 className="font-black text-white text-lg mb-3">
+                Dual API Reliability
+              </h4>
+
+              <p className="text-sm text-slate-300 leading-relaxed">
+                Seamless failover between OpenWeatherMap and
+                Open-Meteo feeds for reliable weather information.
               </p>
+
             </div>
 
-            <div className="p-5 rounded-2xl bg-white/5 border border-white/5 space-y-2.5">
-              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
-                <TrendingUp className="w-5 h-5" />
+            {/* CARD 2 */}
+
+            <div className="group p-6 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-500/10 border border-indigo-400/20 hover:border-purple-300/50 hover:shadow-xl hover:shadow-purple-500/10 transition-all duration-300 hover:-translate-y-2">
+
+              <div className="w-12 h-12 rounded-xl bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                <TrendingUp className="w-6 h-6 text-purple-300" />
               </div>
-              <h4 className="font-bold text-white text-base">Interactive Recharts Analytics</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Explore temperature arcs, precipitation probabilities, and wind gust envelopes with interactive vector charts.
+
+              <h4 className="font-black text-white text-lg mb-3">
+                Interactive Analytics
+              </h4>
+
+              <p className="text-sm text-slate-300 leading-relaxed">
+                Explore temperature trends, precipitation
+                probabilities and wind analytics.
               </p>
+
             </div>
 
-            <div className="p-5 rounded-2xl bg-white/5 border border-white/5 space-y-2.5">
-              <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
-                <Compass className="w-5 h-5" />
+            {/* CARD 3 */}
+
+            <div className="group p-6 rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/10 border border-purple-400/20 hover:border-pink-300/50 hover:shadow-xl hover:shadow-pink-500/10 transition-all duration-300 hover:-translate-y-2">
+
+              <div className="w-12 h-12 rounded-xl bg-purple-500/20 border border-purple-400/30 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                <Compass className="w-6 h-6 text-pink-300" />
               </div>
-              <h4 className="font-bold text-white text-base">Cloud Sync & Saved Hubs</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Securely store favorite destinations, customize temperature units (°C/°F), and track your search trail in MongoDB Atlas.
+
+              <h4 className="font-black text-white text-lg mb-3">
+                Cloud Sync & Saved Hubs
+              </h4>
+
+              <p className="text-sm text-slate-300 leading-relaxed">
+                Store favorite destinations, customize temperature
+                units and manage your weather search history.
               </p>
+
             </div>
+
           </div>
+
+        </section>
+
+        {/* FOOTER MESSAGE */}
+
+        <div className="text-center pt-4 pb-6">
+
+          <p className="text-sm text-slate-400">
+            Powered by WeatherNow
+          </p>
+
+          <p className="text-xs text-slate-500 mt-2">
+            Your World. Your Weather. Your Forecast.
+          </p>
+
         </div>
+
       </div>
-    </div>
+    </main>
   );
 }
-
