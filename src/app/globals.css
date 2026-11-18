@@ -1,20 +1,3 @@
-/* Sunny weather - Bright and warm orange/yellow gradient */
-.weather-sunny {
-  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-  color: #fff;
-}
-
-/* Rainy weather - Deep and cool blue gradient */
-.weather-rainy {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  color: #fff;
-}
-
-/* Cloudy weather - Soft grey-blue tone */
-.weather-cloudy {
-  background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
-  color: #333;
-}
 /* WeatherNow Global Dark Theme */
 
 :root {
