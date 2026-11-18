@@ -15,3 +15,39 @@
   background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
   color: #333;
 }
+/* WeatherNow Global Dark Theme */
+
+:root {
+  --background: #0b1220;
+  --foreground: #ffffff;
+  --primary: #087bff;
+  --secondary: #713bdb;
+  --accent: #00d9ff;
+  --card: #142b50;
+}
+
+body {
+  background: linear-gradient(
+    135deg,
+    #080f20,
+    #111b38,
+    #211746
+  );
+  color: var(--foreground);
+}
+
+.weather-sunny,
+.weather-rainy,
+.weather-cloudy {
+  color: #ffffff;
+  border: 1px solid rgba(0, 217, 255, 0.25);
+  border-radius: 18px;
+}
+button {
+  background: linear-gradient(135deg, #087bff, #00cfff);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
