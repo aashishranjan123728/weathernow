@@ -26,6 +26,7 @@ body {
   border: 1px solid rgba(0, 217, 255, 0.25);
   border-radius: 18px;
 }
+
 button {
   background: linear-gradient(135deg, #087bff, #00cfff);
   color: white;
