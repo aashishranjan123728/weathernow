@@ -128,3 +128,5 @@ body {
   transform: translateY(-5px);
   box-shadow: 0 10px 35px rgba(56, 189, 248, 0.2);
 }
+.weather-sunny{background:yellow;}
+.wather-rainy{backgroung:bule;}
