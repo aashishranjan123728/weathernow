@@ -4,43 +4,73 @@
 
 :root {
   --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 11, 17, 32;
-  --background-end-rgb: 6, 10, 18;
+  --background-start-rgb: 15, 23, 42;
+  --background-end-rgb: 30, 27, 75;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: #0B1120;
+  color: white;
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(0, 180, 255, 0.20),
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      rgba(139, 92, 246, 0.25),
+      transparent 40%
+    ),
+    linear-gradient(135deg, #0f172a, #1e1b4b, #111827);
+
   font-feature-settings: "rlig" 1, "calt" 1;
   min-height: 100vh;
   overflow-x: hidden;
 }
 
-/* Custom smooth scrollbar */
+/* Colorful Selection */
+::selection {
+  background: #06b6d4;
+  color: white;
+}
+
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+  background: #0f172a;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: linear-gradient(
+    180deg,
+    #06b6d4,
+    #8b5cf6
+  );
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: #38bdf8;
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
+/* Hide Scrollbar */
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
 
-/* Animations */
+/* Smooth Animation */
 @keyframes spinSlow {
   from {
     transform: rotate(0deg);
@@ -54,3 +84,47 @@ body {
   animation: spinSlow 20s linear infinite;
 }
 
+/* Floating Animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Gradient Text */
+.gradient-text {
+  background: linear-gradient(
+    90deg,
+    #38bdf8,
+    #818cf8,
+    #c084fc
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Colorful Cards */
+.weather-card {
+  background: linear-gradient(
+    135deg,
+    rgba(30, 64, 175, 0.35),
+    rgba(124, 58, 237, 0.25)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  backdrop-filter: blur(12px);
+  transition: all 0.3s ease;
+}
+
+.weather-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 35px rgba(56, 189, 248, 0.2);
+}
