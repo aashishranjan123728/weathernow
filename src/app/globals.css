@@ -19,12 +19,16 @@ html {
 body {
   color: white;
   background:
-    radial-gradient(circle at top left,
+    radial-gradient(
+      circle at top left,
       rgba(0, 180, 255, 0.20),
-      transparent 40%),
-    radial-gradient(circle at bottom right,
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at bottom right,
       rgba(139, 92, 246, 0.25),
-      transparent 40%),
+      transparent 40%
+    ),
     linear-gradient(135deg, #0f172a, #1e1b4b, #111827);
 
   font-feature-settings: "rlig" 1, "calt" 1;
@@ -49,9 +53,11 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg,
-      #06b6d4,
-      #8b5cf6);
+  background: linear-gradient(
+    180deg,
+    #06b6d4,
+    #8b5cf6
+  );
   border-radius: 9999px;
 }
 
@@ -69,7 +75,6 @@ body {
   from {
     transform: rotate(0deg);
   }
-
   to {
     transform: rotate(360deg);
   }
@@ -81,12 +86,9 @@ body {
 
 /* Floating Animation */
 @keyframes float {
-
-  0%,
-  100% {
+  0%, 100% {
     transform: translateY(0);
   }
-
   50% {
     transform: translateY(-10px);
   }
@@ -95,13 +97,15 @@ body {
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
-
+=
 /* Gradient Text */
 .gradient-text {
-  background: linear-gradient(90deg,
-      #38bdf8,
-      #818cf8,
-      #c084fc);
+  background: linear-gradient(
+    90deg,
+    #38bdf8,
+    #818cf8,
+    #c084fc
+  );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -109,9 +113,11 @@ body {
 
 /* Colorful Cards */
 .weather-card {
-  background: linear-gradient(135deg,
-      rgba(30, 64, 175, 0.35),
-      rgba(124, 58, 237, 0.25));
+  background: linear-gradient(
+    135deg,
+    rgba(30, 64, 175, 0.35),
+    rgba(124, 58, 237, 0.25)
+  );
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 20px;
   backdrop-filter: blur(12px);
