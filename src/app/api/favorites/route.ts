@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { connectToDatabase } from "@/lib/mongodb";
-import FavoriteCity from "@/models/FavoriteCity";
+import { createSupabaseServerClient } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
 
@@ -14,13 +13,20 @@ export async function GET() {
     }
 
     const userId = (session.user as any).id || session.user.email;
-    const conn = await connectToDatabase();
-    if (!conn) {
-      return NextResponse.json([]); // Return empty list if DB offline
+    const supabase = createSupabaseServerClient();
+
+    const { data: favorites, error } = await supabase
+      .from("favorite_cities")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("GET /api/favorites error:", error);
+      return NextResponse.json({ error: "Failed to fetch favorites" }, { status: 500 });
     }
 
-    const favorites = await FavoriteCity.find({ userId }).sort({ createdAt: -1 });
-    return NextResponse.json(favorites);
+    return NextResponse.json(favorites ?? []);
   } catch (err: any) {
     console.error("GET /api/favorites error:", err);
     return NextResponse.json({ error: "Failed to fetch favorites" }, { status: 500 });
@@ -42,30 +48,36 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "City name is required" }, { status: 400 });
     }
 
-    const conn = await connectToDatabase();
-    if (!conn) {
-      return NextResponse.json(
-        { error: "Database unavailable. Saved locally." },
-        { status: 503 }
-      );
-    }
+    const supabase = createSupabaseServerClient();
 
-    // Check if already favorited
-    const existing = await FavoriteCity.findOne({
-      userId,
-      cityName: { $regex: new RegExp(`^${cityName.trim()}$`, "i") },
-    });
+    // Check if already favorited (case-insensitive)
+    const { data: existing } = await supabase
+      .from("favorite_cities")
+      .select("*")
+      .eq("user_id", userId)
+      .ilike("city_name", cityName.trim())
+      .maybeSingle();
 
     if (existing) {
       return NextResponse.json(existing, { status: 200 });
     }
 
-    const newFav = await FavoriteCity.create({
-      userId,
-      cityName: cityName.trim(),
-      country: country || "",
-      coordinates,
-    });
+    const { data: newFav, error } = await supabase
+      .from("favorite_cities")
+      .insert({
+        user_id: userId,
+        city_name: cityName.trim(),
+        country: country || "",
+        lat: coordinates?.lat ?? null,
+        lon: coordinates?.lon ?? null,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error("POST /api/favorites error:", error);
+      return NextResponse.json({ error: "Failed to save favorite city" }, { status: 500 });
+    }
 
     return NextResponse.json(newFav, { status: 201 });
   } catch (err: any) {
@@ -86,18 +98,20 @@ export async function DELETE(req: Request) {
     const id = searchParams.get("id");
     const cityName = searchParams.get("cityName");
 
-    const conn = await connectToDatabase();
-    if (!conn) {
-      return NextResponse.json({ success: true });
-    }
+    const supabase = createSupabaseServerClient();
 
     if (id) {
-      await FavoriteCity.findOneAndDelete({ _id: id, userId });
+      await supabase
+        .from("favorite_cities")
+        .delete()
+        .eq("id", id)
+        .eq("user_id", userId);
     } else if (cityName) {
-      await FavoriteCity.findOneAndDelete({
-        userId,
-        cityName: { $regex: new RegExp(`^${cityName.trim()}$`, "i") },
-      });
+      await supabase
+        .from("favorite_cities")
+        .delete()
+        .eq("user_id", userId)
+        .ilike("city_name", cityName.trim());
     } else {
       return NextResponse.json({ error: "Missing favorite ID or city name" }, { status: 400 });
     }
@@ -108,4 +122,3 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: "Failed to remove favorite city" }, { status: 500 });
   }
 }
-

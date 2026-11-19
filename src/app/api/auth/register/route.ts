@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { connectToDatabase } from "@/lib/mongodb";
-import User from "@/models/User";
+import { createSupabaseServerClient } from "@/lib/supabase";
 
 export async function POST(req: Request) {
   try {
@@ -38,16 +37,15 @@ export async function POST(req: Request) {
       );
     }
 
-    const conn = await connectToDatabase();
-    if (!conn) {
-      return NextResponse.json(
-        { error: "Database connection unavailable. Please check MongoDB Atlas credentials." },
-        { status: 503 }
-      );
-    }
+    const supabase = createSupabaseServerClient();
 
     // Check if user already exists
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    const { data: existingUser } = await supabase
+      .from("users")
+      .select("id")
+      .eq("email", email.toLowerCase())
+      .single();
+
     if (existingUser) {
       return NextResponse.json(
         { error: "An account with this email already exists." },
@@ -59,19 +57,31 @@ export async function POST(req: Request) {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create user
-    const newUser = await User.create({
-      name: name.trim(),
-      email: email.toLowerCase().trim(),
-      password: hashedPassword,
-    });
+    // Insert new user
+    const { data: newUser, error } = await supabase
+      .from("users")
+      .insert({
+        name: name.trim(),
+        email: email.toLowerCase().trim(),
+        password: hashedPassword,
+      })
+      .select("id, name, email")
+      .single();
+
+    if (error || !newUser) {
+      console.error("Supabase insert error:", error);
+      return NextResponse.json(
+        { error: "Failed to create account. Please try again." },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json(
       {
         success: true,
         message: "Registration successful! You can now log in.",
         user: {
-          id: newUser._id.toString(),
+          id: newUser.id,
           name: newUser.name,
           email: newUser.email,
         },
@@ -86,4 +96,3 @@ export async function POST(req: Request) {
     );
   }
 }
-
