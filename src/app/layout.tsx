@@ -13,7 +13,7 @@ export const viewport: Viewport = {
   themeColor: "#0B1120",
 };
 
-const siteUrl = process.env.NEXTAUTH_URL || "https://weathernow.app";
+const siteUrl = process.env.NEXTAUTH_URL || "https://weathernow-olive.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
